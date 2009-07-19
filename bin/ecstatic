@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+
+if ARGV.length != 1
+  $stderr.puts "Usage: ecstatic PATH  - create skeleton site in PATH\n"
+  exit 1
+end
+
+target = ARGV[0]
+
+sampledir = File.join File.dirname(__FILE__), "../samplesite"
+FileUtils.cp_r("#{sampledir}/.", target)
+
+puts "Created skeleton in #{target}."
+puts "To make your site:"
+puts "    cd #{target}"
+puts "    rake"
+
+exit 0

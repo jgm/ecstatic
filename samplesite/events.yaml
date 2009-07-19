@@ -1,0 +1,14 @@
+events:
+
+- title: Why Static Sites Are Best
+  speaker: Sam Spade
+  date:
+    start: 2009-04-08
+    end  : 2009-04-09
+
+- title: Ruby vs. Haskell
+  speaker:
+   - Sam Spade
+   - John Doe
+  date: 2009-05-09
+

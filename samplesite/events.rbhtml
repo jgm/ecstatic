@@ -1,0 +1,9 @@
+<h1>Events</h1>
+<img src="Ukulele.jpg"/>
+<ul>
+<?rb for event in @events.sort_by {|e| e.date}.reverse ?>
+  <li>
+    ${event.speaker}, ${event.title} (${event.date.to_s("%B %d, %Y")})
+  </li>
+<?rb end ?>
+</ul>

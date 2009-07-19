@@ -1,0 +1,12 @@
+sitetitle: My ecstatic site
+
+pages:
+
+- url: events.html
+  title: Events
+  template: events.rbhtml
+  data: events.yaml
+
+menu:
+
+- events.html
