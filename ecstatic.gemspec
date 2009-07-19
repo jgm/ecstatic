@@ -13,8 +13,8 @@ Gem::Specification.new do |s|
   s.default_executable = "ecstatic"
   s.files    = File.open("Manifest.txt").readlines.map {|x| x.chomp}
   s.test_files = []
-  s.rdoc_options = ["--main", "README.txt", "--inline-source"]
-  s.extra_rdoc_files = ["README.txt"]
+  s.rdoc_options = ["--main", "README", "--inline-source"]
+  s.extra_rdoc_files = ["README"]
   s.add_dependency("activesupport", [">= 1.1"])
   s.add_dependency("rpeg-markdown", [">= 0.2"])
   s.add_dependency("tenjin", [">= 0.6.1"])
