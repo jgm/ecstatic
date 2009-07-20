@@ -2,8 +2,10 @@
 def mkmenu(menu)
   _buf << "<ul class=\"nav\">\n"
   menu.each_pair do |k,v|
-    if k.class == Array
-      _buf << "<li>#{k}\n" + mkmenu(v) + "</li>\n"
+    if v.class == Hash
+      _buf << "<li>#{k}\n"
+      mkmenu(v)
+      _buf << "</li>\n"
     else
       selected = if @_url == v
                     " class=\"selected\""
