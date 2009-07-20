@@ -1,2 +1,5 @@
-Home: index.html 
-Events: events.html
+- Home: index.html
+- Events: events.html
+- My submenu:
+  - Home again: index.html
+  - Events again: events.html

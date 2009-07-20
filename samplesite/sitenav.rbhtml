@@ -1,18 +1,24 @@
 <?rb
 def mkmenu(menu)
   _buf << "<ul class=\"nav\">\n"
-  menu.each_pair do |k,v|
-    if v.class == Hash
-      _buf << "<li>#{k}\n"
-      mkmenu(v)
-      _buf << "</li>\n"
+  menu.each do |item|
+    if item.class == Hash
+      item.each_pair do |k,v|
+        if v.class == Array
+          _buf << "<li>#{k}\n"
+          mkmenu(v)
+          _buf << "</li>\n"
+        else
+          selected = if @_url == v
+                        " class=\"selected\""
+                     else
+                        ""
+                     end
+          _buf << "<li><a href=#{v}#{selected}>#{k}</a></li>\n"
+        end
+      end
     else
-      selected = if @_url == v
-                    " class=\"selected\""
-                 else
-                    ""
-                 end
-      _buf << "<li><a href=#{v}#{selected}>#{k}</a></li>\n"
+      # do nothing - shouldn't happen
     end
   end
   _buf << "</ul>\n"
