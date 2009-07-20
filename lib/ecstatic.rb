@@ -7,11 +7,17 @@ require 'activesupport'
 
 module Ecstatic
   class Page
-    attr_accessor :contexthash, :layoutfile, :templatefile
+    attr_accessor :contexthash, :layoutfile, :templatefile, :navhash, :url
   
-    def initialize(templatefile = nil, datafiles = [], layoutfile = nil)
+    def initialize(templatefile = nil, datafiles = [], layoutfile = nil, navfile = nil, url = nil)
       @templatefile = templatefile
       @layoutfile = layoutfile
+      @url = url
+      @navhash = if navfile
+                    YAML::load(File.open(navfile).read)
+                 else
+                    nil
+                 end
       # get context from data files
       @contexthash = {}
       datafiles.each do |file|
@@ -51,9 +57,9 @@ module Ecstatic
         contents = File.open(self.templatefile).read
         output = case
                  when format == :html
-                    markdown_to_compact_html(contents)
+                    Ecstatic.markdown_to_compact_html(contents)
                  when format == :latex
-                    markdown_to_latex(contents)
+                    Ecstatic.markdown_to_latex(contents)
                  else
                     escape(contents)
                  end
@@ -63,9 +69,7 @@ module Ecstatic
       end
      
       if self.layoutfile
-        supercontext = Tenjin::Context.new({'_contents' => output})
-        superoutput = engine.render(self.layoutfile, {'_contents' => output})
-        return superoutput
+        return engine.render(self.layoutfile, {'_contents' => output, '_nav' => self.navhash, '_url' => self.url})
       else
         return output
       end

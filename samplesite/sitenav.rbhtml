@@ -1,0 +1,19 @@
+<?rb
+def mkmenu(menu)
+  _buf << "<ul class=\"nav\">\n"
+  menu.each_pair do |k,v|
+    if k.class == Array
+      _buf << "<li>#{k}\n" + mkmenu(v) + "</li>\n"
+    else
+      selected = if @_url == v
+                    " class=\"selected\""
+                 else
+                    ""
+                 end
+      _buf << "<li><a href=#{v}#{selected}>#{k}</a></li>\n"
+    end
+  end
+  _buf << "</ul>\n"
+end
+?>
+<?rb mkmenu(@_nav) ?>

@@ -11,15 +11,16 @@ SITEDIR = "site"
 CLEAN.include(SITEDIR)
 
 LAYOUT = "standard.rbhtml"
+NAVFILE = "sitenav.yaml"
 
 siteindex = YAML::load File.read("siteindex.yaml")
-SITETITLE = siteindex['sitetitle']
 
 # construct list of pages
 PAGES = {}
-siteindex['pages'].each do |p|
+siteindex.each do |p|
   dest = File.join SITEDIR, p['url']
   PAGES[dest] = {
+    :url => p['url'],
     :title => p['title'],
     :template => p['template'],
     :data => if p['data'].class == Array
@@ -58,8 +59,8 @@ end
 
 PAGES.each_pair do |dest,page|
 
-  file dest => ([page[:template], LAYOUT] + page[:data]) do
-    output = Ecstatic::Page.new(page[:template], page[:data], LAYOUT).to_html
+  file dest => ([page[:template], LAYOUT, NAVFILE] + page[:data]) do
+    output = Ecstatic::Page.new(page[:template], page[:data], LAYOUT, NAVFILE, page[:url]).to_html
     File.open(dest, 'w').write(output)
   end
 
