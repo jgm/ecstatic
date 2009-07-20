@@ -1,22 +1,62 @@
-Gem::Specification.new do |s|
-  s.name     = "ecstatic"
-  s.version  = "0.1"
-  s.date     = "2009-07-19"
-  s.summary  = "Framework for maintaining a static website from templates and data in YAML files."
-  s.email    = "jgm@berkeley.edu"
-  s.homepage = "http://github.com/jgm/cloudlib"
-  s.description = "Ecstatic is a framework for maintaining a static website from templates and data in YAML files."
-  s.has_rdoc = true
-  s.authors  = ["John MacFarlane"]
-  s.bindir   = "bin"
-  s.executables = ["ecstatic"]
-  s.default_executable = "ecstatic"
-  s.files    = File.open("Manifest.txt").readlines.map {|x| x.chomp}
-  s.test_files = []
-  s.rdoc_options = ["--main", "README", "--inline-source"]
-  s.extra_rdoc_files = ["README"]
-  s.add_dependency("activesupport", [">= 1.1"])
-  s.add_dependency("rpeg-markdown", [">= 0.2"])
-  s.add_dependency("tenjin", [">= 0.6.1"])
-end
+# -*- encoding: utf-8 -*-
 
+Gem::Specification.new do |s|
+  s.name = %q{ecstatic}
+  s.version = "0.0.0"
+
+  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.authors = ["John MacFarlane"]
+  s.date = %q{2009-07-20}
+  s.default_executable = %q{ecstatic}
+  s.description = %q{Ecstatic is a framework for maintaining a static website from templates and data in YAML files.}
+  s.email = %q{jgm@berkeley.edu}
+  s.executables = ["ecstatic"]
+  s.extra_rdoc_files = [
+    "ChangeLog",
+     "README"
+  ]
+  s.files = [
+    "ChangeLog",
+     "README",
+     "Rakefile",
+     "VERSION",
+     "bin/ecstatic",
+     "ecstatic.gemspec",
+     "lib/ecstatic.rb",
+     "samplesite/README",
+     "samplesite/Rakefile",
+     "samplesite/events.rbhtml",
+     "samplesite/events.yaml",
+     "samplesite/files/Ukulele.jpg",
+     "samplesite/files/css/print.css",
+     "samplesite/files/css/screen.css",
+     "samplesite/models/models.rb",
+     "samplesite/siteindex.yaml",
+     "samplesite/standard.rbhtml"
+  ]
+  s.has_rdoc = true
+  s.homepage = %q{http://github.com/jgm/cloudlib}
+  s.rdoc_options = ["--charset=UTF-8"]
+  s.require_paths = ["lib"]
+  s.rubygems_version = %q{1.3.1}
+  s.summary = %q{Framework for maintaining a static website from templates and data in YAML files.}
+
+  if s.respond_to? :specification_version then
+    current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
+    s.specification_version = 2
+
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<activesupport>, [">= 1.1"])
+      s.add_runtime_dependency(%q<rpeg-markdown>, [">= 0.2"])
+      s.add_runtime_dependency(%q<tenjin>, [">= 0.6.1"])
+    else
+      s.add_dependency(%q<activesupport>, [">= 1.1"])
+      s.add_dependency(%q<rpeg-markdown>, [">= 0.2"])
+      s.add_dependency(%q<tenjin>, [">= 0.6.1"])
+    end
+  else
+    s.add_dependency(%q<activesupport>, [">= 1.1"])
+    s.add_dependency(%q<rpeg-markdown>, [">= 0.2"])
+    s.add_dependency(%q<tenjin>, [">= 0.6.1"])
+  end
+end
