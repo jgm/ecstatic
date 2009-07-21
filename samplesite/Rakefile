@@ -50,10 +50,13 @@ directory SITEDIR
 FILES.each_pair do |dest,src|
   file dest => src do
     d = File.dirname dest
-    if ! File.exists? d
-      mkdir_p(File.dirname(dest))
+    if File.directory?
+      if ! File.exists? d
+        mkdir_p(File.dirname(dest))
+      end
+    else
+      cp src, dest
     end
-    cp src, dest
   end
 end
 
