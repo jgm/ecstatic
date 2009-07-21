@@ -162,26 +162,27 @@ module Ecstatic
     end
   end
 
-    # escape functions
+  # escape functions
 
-    def markdown_to_html(str)
-      Markdown.new(str, :smart).to_html
+  def markdown_to_html(str)
+    Markdown.new(str, :smart).to_html
+  end
+
+  def markdown_to_compact_html(str)
+    res = markdown_to_html(str)
+    if (res =~ /<p>.*<p>/)
+      return res
+    else  # only one paragraph
+      return res.gsub(/<\/?p>/,"")
     end
+  end
 
-    def markdown_to_compact_html(str)
-      res = markdown_to_html(str)
-      if (res =~ /<p>.*<p>/)
-        return res
-      else  # only one paragraph
-        return res.gsub(/<\/?p>/,"")
-      end
-    end
+  def markdown_to_latex(str)
+    Markdown.new(str, :smart).to_latex
+  end
 
-    def markdown_to_latex(str)
-      Markdown.new(str, :smart).to_latex
-    end
+  alias m markdown_to_html
+  module_function :markdown_to_html, :markdown_to_compact_html, :markdown_to_latex, :m
 
-    alias m markdown_to_html
-    module_function :markdown_to_html, :markdown_to_compact_html, :markdown_to_latex, :m
 end
 
