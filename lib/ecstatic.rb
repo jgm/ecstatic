@@ -181,8 +181,38 @@ module Ecstatic
     Markdown.new(str, :smart).to_latex
   end
 
+  def mkmenu(menu, url = nil)
+    if ! menu
+      return ""
+    end
+    _buf = []
+    _buf << "<ul class=\"nav\">"
+    menu.each do |item|
+      if item.class == Hash
+        item.each_pair do |k,v|
+          if v.class == Array
+            _buf << "<li>#{k}"
+            _buf << mkmenu(v, url)
+            _buf << "</li>"
+          else
+            selected = if url == v
+                          " class=\"selected\""
+                       else
+                          ""
+                       end
+            _buf << "<li><a href=#{v}#{selected}>#{k}</a></li>"
+          end
+        end
+      else
+        # do nothing - shouldn't happen
+      end
+    end
+    _buf << "</ul>"
+    return _buf.join("\n")
+  end
+
   alias m markdown_to_html
-  module_function :markdown_to_html, :markdown_to_compact_html, :markdown_to_latex, :m
+  module_function :markdown_to_html, :markdown_to_compact_html, :markdown_to_latex, :m, :mkmenu
 
 end
 
