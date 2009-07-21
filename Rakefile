@@ -15,6 +15,7 @@ begin
     gemspec.authors  = ["John MacFarlane"]
     gemspec.test_files = []
     gemspec.add_dependency("activesupport", [">= 1.1"])
+    gemspec.add_dependency("rake", [">= 0.8.0"])
     gemspec.add_dependency("rpeg-markdown", [">= 0.2"])
     gemspec.add_dependency("tenjin", [">= 0.6.1"])
   end

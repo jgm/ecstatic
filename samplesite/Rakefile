@@ -1,69 +1,10 @@
-require 'rake/clean'
+require 'rake'
 require 'ecstatic'
-require 'find'
 
-# load user-defined data models
-Find.find('models') do |f|
-  require f unless f == 'models'
-end
+Ecstatic::Tasks.website
 
-SITEDIR = "site"
-CLEAN.include(SITEDIR)
-
-LAYOUT = "standard.rbhtml"
-NAVFILE = "sitenav.yaml"
-
-siteindex = YAML::load File.read("siteindex.yaml")
-
-# construct list of pages
-PAGES = {}
-siteindex.each do |p|
-  dest = File.join SITEDIR, p['url']
-  PAGES[dest] = {
-    :url => p['url'],
-    :title => p['title'],
-    :template => p['template'],
-    :data => if p['data'].class == Array
-                p['data']
-             elsif p['data'].class == String
-                [p['data']]
-             else
-                []
-             end }
-end
-
-# construct hash of files
-FILESDIR = "files"
-FILES = {}
-Find.find(FILESDIR) do |f|
-  if f != FILESDIR
-    base = f.gsub(/^[^\/]*\//,"")
-    FILES[File.join(SITEDIR, base)] = f
-  end
-end
-
-task :default => :all
-task :all => [SITEDIR] + PAGES.keys + FILES.keys
-
-directory SITEDIR
-
-FILES.each_pair do |dest,src|
-  file dest => src do
-    d = File.dirname dest
-    if ! File.exists?(d)
-        mkdir_p d
-    end
-    if ! File.directory? dest
-      cp src, dest
-    end
-  end
-end
-
-PAGES.each_pair do |dest,page|
-
-  file dest => ([page[:template], LAYOUT, NAVFILE] + page[:data]) do
-    output = Ecstatic::Page.new(page[:template], page[:data], LAYOUT, NAVFILE, page[:url]).to_html
-    File.open(dest, 'w').write(output)
-  end
-
+desc "Upload website to server."
+task :upload => :website do
+  puts "Not implemented!"
+  # Insert your own uploading code here, using rsync or whatever...
 end
