@@ -3,6 +3,8 @@ require 'ecstatic'
 
 Ecstatic::Tasks.website
 
+task :default => :website
+
 desc "Upload website to server."
 task :upload => :website do
   puts "Not implemented!"
