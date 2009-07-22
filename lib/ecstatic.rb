@@ -45,7 +45,11 @@ module Ecstatic
           :title => p['title'],
           :layoutfile => p['layout'] || @default_layout,
           :templatefile => File.join(@templatesdir, p['template']),
-          :format => p['format'] || :html,
+          :format => if p['format']
+                        p['format'].to_sym
+                    else
+                        :html
+                    end,
           :navhash => @navhash,
           :datafiles => if p['data'].class == Array
                            File.join @datadir, p['data']
@@ -122,9 +126,14 @@ module Ecstatic
         yaml.each_pair do |key,val|
           model = key.singularize.capitalize
           begin
-            @contexthash[key] = Object.const_get(model).from_array(val)
+            mod = Object.const_get(model)
+            begin
+              @contexthash[key] = mod.from_array(val)
+            rescue
+              $stderr.puts("Unable to initialize " + key + " from model " + model)
+              throw :unable_to_initialize
+            end
           rescue
-            $stderr.puts("Unable to initialize " + key + " from model " + model)
             @contexthash[key] = val
           end
         end
@@ -140,8 +149,6 @@ module Ecstatic
         "pandoc -r markdown -w html --smart"
       when :latex
         "pandoc -r markdown -w latex --smart"
-      when :pdf
-        "pandoc -r markdown -w latex --smart | rubber-pipe --pdf"
       when :plain
         "cat"
       end
@@ -184,7 +191,7 @@ module Ecstatic
                        else
                           ""
                        end
-            _buf << "<li><a href=#{v}#{selected}>#{k}</a></li>"
+            _buf << "<li#{selected}><a href=#{v}>#{k}</a></li>"
           end
         end
       else
