@@ -2,15 +2,22 @@ require 'rubygems'
 require 'tenjin'
 require 'optparse'
 require 'yaml'
-require 'markdown'
 require 'activesupport'
 require 'rake'
 require 'rake/clean'
 require 'find'
+require 'open3'
 
 module Ecstatic
-  class Tasks
-    def self.website(paths = {})
+  class Site
+#    :attr_accessor :pages, :files, :sitedir, :templatesdir, :filesdir,
+#                   :default_layout, :navhash, :sitetitle
+
+#    def initialize(params)
+       
+#    end
+
+    def tasks(paths = {})
       sitedir = paths[:sitedir] || "site"
       layout = paths[:layoutfile] || "standard.rbhtml"
       navfile = paths[:navfile] || "sitenav.yaml"
@@ -35,6 +42,7 @@ module Ecstatic
           :url => p['url'],
           :title => p['title'],
           :template => p['template'],
+          :format => p['format'],
           :data => if p['data'].class == Array
                       p['data']
                    elsif p['data'].class == String
@@ -81,10 +89,11 @@ module Ecstatic
   end
 
   class Page
-    attr_accessor :contexthash, :layoutfile, :templatefile, :navhash, :url
+    attr_accessor :contexthash, :layoutfile, :templatefile, :navhash, :url, :format
 
-    def initialize(templatefile = nil, datafiles = [], layoutfile = nil, navfile = nil, url = nil)
+    def initialize(templatefile = nil, datafiles = [], layoutfile = nil, navfile = nil, url = nil, format = :html)
       @templatefile = templatefile
+      @format = format
       @layoutfile = layoutfile
       @url = url
       @navhash = if navfile
@@ -113,72 +122,38 @@ module Ecstatic
       end
     end
 
-    def escapefun(format)
-      case
-      when format == :html
-        return 'Ecstatic.markdown_to_compact_html'
-      when format == :latex
-        return 'Ecstatic.markdown_to_latex'
-      else
-        return 'escape'
+    def render
+      engine = Tenjin::Engine.new(:cache => false, :escapefunc => 'Ecstatic.no_escape')
+      context = Tenjin::Context.new(self.contexthash)
+      markdown_output = engine.render(self.templatefile, context)
+      cmd = case self.format
+      when :html
+        "pandoc -r markdown -w html --smart"
+      when :latex
+        "pandoc -r markdown -w latex --smart"
+      when :pdf
+        "pandoc -r markdown -w latex --smart | rubber-pipe --pdf"
+      when :plain
+        "cat"
       end
-     end
-
-     def to_format(format)
-      engine = Tenjin::Engine.new(:cache => false, :escapefunc => escapefun(format))
-
-      if File.extname(self.templatefile) == '.markdown'
-        contents = File.open(self.templatefile).read
-        output = case
-                 when format == :html
-                    Ecstatic.markdown_to_compact_html(contents)
-                 when format == :latex
-                    Ecstatic.markdown_to_latex(contents)
-                 else
-                    escape(contents)
-                 end
-      else
-        context = Tenjin::Context.new(self.contexthash)
-        output = engine.render(self.templatefile, context)
+      formatted_output = Open3.popen3(cmd) do |stdin, stdout, stderr|
+        stdin.write(markdown_output)
+        stdin.close
+        stdout.read
       end
-
       if self.layoutfile
-        return engine.render(self.layoutfile, {'_contents' => output, '_nav' => self.navhash, '_url' => self.url})
+         engine.render(self.layoutfile, {'_contents' => formatted_output, '_nav' => self.navhash, '_url' => self.url})
       else
-        return output
+         formatted_output
       end
     end
 
-    def to_html
-      self.to_format(:html)
-    end
-
-    def to_latex
-      self.to_format(:latex)
-    end
-
-    def to_plain
-      self.to_format(:plain)
-    end
   end
 
   # escape functions
 
-  def markdown_to_html(str)
-    Markdown.new(str, :smart).to_html
-  end
-
-  def markdown_to_compact_html(str)
-    res = markdown_to_html(str)
-    if (res =~ /<p>.*<p>/)
-      return res
-    else  # only one paragraph
-      return res.gsub(/<\/?p>/,"")
-    end
-  end
-
-  def markdown_to_latex(str)
-    Markdown.new(str, :smart).to_latex
+  def no_escape(str)
+    str
   end
 
   def mkmenu(menu, url = nil)
@@ -211,8 +186,7 @@ module Ecstatic
     return _buf.join("\n")
   end
 
-  alias m markdown_to_html
-  module_function :markdown_to_html, :markdown_to_compact_html, :markdown_to_latex, :m, :mkmenu
+  module_function :mkmenu, :no_escape
 
 end
 

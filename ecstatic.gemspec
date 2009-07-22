@@ -25,14 +25,14 @@ Gem::Specification.new do |s|
      "lib/ecstatic.rb",
      "samplesite/README",
      "samplesite/Rakefile",
-     "samplesite/events.rbhtml",
+     "samplesite/events.rbtxt",
      "samplesite/events.yaml",
      "samplesite/files/Ukulele.jpg",
      "samplesite/files/css/print.css",
      "samplesite/files/css/screen.css",
+     "samplesite/index.txt",
      "samplesite/models/models.rb",
      "samplesite/siteindex.yaml",
-     "samplesite/sitenav.rbhtml",
      "samplesite/sitenav.yaml",
      "samplesite/standard.rbhtml"
   ]
