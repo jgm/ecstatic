@@ -1,7 +1,14 @@
 # Events
 
-![Ukulele](Ukulele.jpg)
+Here is a list of recent events, most recent first:
 
 <?rb for event in @events.sort_by {|e| e.date}.reverse ?>
 + ${event.speaker}, ${event.title} (${event.date.to_s("%B %d, %Y")})
 <?rb end ?>
+
+Oldest first, with different date format:
+
+<?rb for event in @events.sort_by {|e| e.date} ?>
++ ${event.speaker}, ${event.title} (${event.date.to_s("%m/%d/%y")})
+<?rb end ?>
+

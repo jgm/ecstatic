@@ -5,7 +5,15 @@
    <link rel="stylesheet" type="text/css" media="print" href="css/print.css" />
 </head>
 <body>
-#{Ecstatic.mkmenu(@_nav,@_url)}
-#{@_contents}
+<div id="doc3" class="yui-t1">
+  <div id="yui-main">
+    <div id="maincol" class="yui-b">
+     #{@_contents}
+    </div>
+  </div>
+  <div id="sidebar" class="yui-b first">
+    #{Ecstatic.mkmenu(@_nav,@_url)}
+  </div>
+</div>
 </body>
 </html>

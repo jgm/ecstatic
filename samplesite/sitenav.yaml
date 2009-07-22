@@ -1,5 +1,9 @@
 - Home: index.html
 - Events: events.html
-- My submenu:
-  - Home again: index.html
-  - Events again: events.html
+
+# You can have submenus like this:
+# - My submenu:
+#   - Food: food.html
+#   - Drinks:
+#     - Wine: wine.html
+#     - Beer: beer.html
