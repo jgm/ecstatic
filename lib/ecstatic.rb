@@ -94,6 +94,7 @@ module Ecstatic
         file dest => ([page.templatefile, page.layoutfile, self.navfile] + page.datafiles) do
           output = page.render
           File.open(dest, 'w').write(output)
+          $stderr.puts "rendered #{dest}"
         end
       end
 
