@@ -10,56 +10,67 @@ require 'open3'
 
 module Ecstatic
   class Site
-#    :attr_accessor :pages, :files, :sitedir, :templatesdir, :filesdir,
-#                   :default_layout, :navhash, :sitetitle
+    attr_accessor :pages, :files, :sitedir, :templatesdir, :datadir, :filesdir,
+                   :default_layout, :navfile, :navhash, :sitetitle, :modelsdir
 
-#    def initialize(params)
-       
-#    end
-
-    def tasks(paths = {})
-      sitedir = paths[:sitedir] || "site"
-      layout = paths[:layoutfile] || "standard.rbhtml"
-      navfile = paths[:navfile] || "sitenav.yaml"
-      index = paths[:indexfile] || "siteindex.yaml"
-      filesdir = paths[:filesdir] || "files"
-      modelsdir = paths[:modelsdir] || "models"
-
-      CLEAN.include(sitedir)
+    def initialize(params = {})
+      @sitedir = params[:sitedir] || "site"
+      @default_layout = params[:layoutfile] || "standard.rbhtml"
+      @filesdir = params[:filesdir] || "files"
+      @modelsdir = params[:modelsdir] || "models"
+      @sitetitle = params[:sitetitle] || ""
+      @templatesdir = params[:templatesdir] || "."
+      @datadir = params[:datadir] || "."
+      @navfile = params[:navfile] || "sitenav.yaml"
+      index = params[:indexfile] || "siteindex.yaml"
 
       siteindex = YAML::load File.read(index)
 
       # load user-defined data models
-      Find.find(modelsdir) do |f|
-        require f unless f == modelsdir
+      Find.find(@modelsdir) do |f|
+        require f unless f == @modelsdir
       end
 
+      # construct navigation map
+      @navhash = if @navfile
+                    YAML::load(File.open(@navfile).read)
+                 end
+
       # construct list of pages
-      pages = {}
+      @pages = {}
       siteindex.each do |p|
-        dest = File.join sitedir, p['url']
-        pages[dest] = {
+        dest = File.join @sitedir, p['url']
+        @pages[dest] = Page.new({
           :url => p['url'],
           :title => p['title'],
-          :template => p['template'],
-          :format => p['format'],
-          :data => if p['data'].class == Array
-                      p['data']
-                   elsif p['data'].class == String
-                      [p['data']]
-                   else
-                      []
-                   end }
+          :layoutfile => p['layout'] || @default_layout,
+          :templatefile => File.join(@templatesdir, p['template']),
+          :format => p['format'] || :html,
+          :navhash => @navhash,
+          :datafiles => if p['data'].class == Array
+                           File.join @datadir, p['data']
+                        elsif p['data'].class == String
+                           [p['data']].map {|x| File.join @datadir, x}
+                        else
+                           []
+                        end
+          })
       end
 
       # construct hash of files
-      files = {}
-      Find.find(filesdir) do |f|
-        if f != filesdir
+      @files = {}
+      Find.find(@filesdir) do |f|
+        if f != @filesdir
           base = f.gsub(/^[^\/]*\//,"")
-          files[File.join(sitedir, base)] = f
+          @files[File.join(@sitedir, base)] = f
         end
       end
+
+    end
+
+    def tasks
+
+      CLEAN.include(sitedir)
 
       directory sitedir
 
@@ -76,8 +87,8 @@ module Ecstatic
       end
 
       pages.each_pair do |dest,page|
-        file dest => ([page[:template], layout, navfile] + page[:data]) do
-          output = Ecstatic::Page.new(page[:template], page[:data], layout, navfile, page[:url]).to_html
+        file dest => ([page.templatefile, page.layoutfile, self.navfile] + page.datafiles) do
+          output = page.render
           File.open(dest, 'w').write(output)
         end
       end
@@ -89,21 +100,19 @@ module Ecstatic
   end
 
   class Page
-    attr_accessor :contexthash, :layoutfile, :templatefile, :navhash, :url, :format
+    attr_accessor :datafiles, :contexthash, :layoutfile, :templatefile, :url, :format, :title, :navhash
 
-    def initialize(templatefile = nil, datafiles = [], layoutfile = nil, navfile = nil, url = nil, format = :html)
-      @templatefile = templatefile
-      @format = format
-      @layoutfile = layoutfile
-      @url = url
-      @navhash = if navfile
-                    YAML::load(File.open(navfile).read)
-                 else
-                    nil
-                 end
+    def initialize(params)
+      @templatefile = params[:templatefile]
+      @title = params[:title]
+      @format = params[:format]
+      @layoutfile = params[:layoutfile]
+      @navhash = params[:navhash]
+      @url = params[:url]
+      @datafiles = params[:datafiles] || []
       # get context from data files
       @contexthash = {}
-      datafiles.each do |file|
+      @datafiles.each do |file|
         yamltext = File.open(file).read
         yaml = YAML::load(yamltext)
         # if YAML is not a hash, make a hash with file's basename as key:

@@ -1,7 +1,11 @@
 require 'rake'
 require 'ecstatic'
 
-Ecstatic::Site.new.tasks
+Ecstatic::Site.new(:sitedir => "site", :layoutfile => "standard.rbhtml",
+                   :filesdir => "files", :modelsdir => "models",
+                   :sitetitle => "Demo", :templatesdir => ".",
+                   :datadir => ".", :navfile => "sitenav.yaml",
+                   :indexfile => "siteindex.yaml").tasks
 
 task :default => :website
 
