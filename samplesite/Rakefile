@@ -1,7 +1,7 @@
 require 'rake'
 require 'ecstatic'
 
-Ecstatic::Tasks.website
+Ecstatic::Site.new.tasks
 
 task :default => :website
 

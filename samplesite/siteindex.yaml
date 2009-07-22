@@ -1,8 +1,8 @@
 - url: events.html
   title: Events
-  template: events.rbhtml
+  template: events.rbtxt
   data: events.yaml
 
 - url: index.html
   title: Home
-  template: index.markdown
+  template: index.txt

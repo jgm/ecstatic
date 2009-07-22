@@ -1,0 +1,5 @@
+# Sample ecstatic site
+
+This page is generated from a markdown source,
+with no data.
+
